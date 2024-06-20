@@ -54,6 +54,7 @@ public class SocialMediaController {
         ObjectMapper mapper = new ObjectMapper();
         Account account = mapper.readValue(context.body(), Account.class);
         Account addedAccount = accountService.addAccount(account);
+        System.out.println("Controller addedAccount: " + addedAccount);
         if(addedAccount != null) {
             context.json(mapper.writeValueAsString(addedAccount));
         } else {

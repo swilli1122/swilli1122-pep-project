@@ -15,7 +15,13 @@ public class AccountService {
     }
 
     public Account addAccount(Account account) {
-        return accountDao.createAccount(account);
+        if (account.getUsername() != "" && account.getUsername() != null) {
+            if (account.getPassword().length() >= 4) {
+                System.out.println("Service addAccount passing account : " + account + " to DAO");
+                return accountDao.createAccount(account);
+            }
+        } 
+        return null;
     }
 
     public boolean loginAttempt(Account account) {
