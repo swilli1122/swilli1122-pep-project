@@ -30,19 +30,38 @@ public class AccountDAO {
                 int generated_account_id = (int) pkeyResultSet.getLong(1);
                 return new Account(generated_account_id, account.getUsername(), account.getPassword());
             }
-        }catch(SQLException e){
+        } catch(SQLException e) {
             System.out.println(e.getMessage());
         }
         return null;
     }
 
-    public boolean login(Account account) {
-        boolean isValidLogin = false;
-        return isValidLogin;
+    public Account login(Account account) {
+        if (accountExists(account.getUsername()) != true) {
+            System.out.println("DAO: Account does not exist! ");
+            return null;
+        }
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+            String sql = "select * from account where username = ?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, account.getUsername());
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                if (rs.getString("username").equals(account.getUsername())) {
+                    if (rs.getString("password").equals(account.getPassword())) {
+                        return new Account(rs.getInt("account_id"), rs.getString("username"), rs.getString("password"));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
     }
 
     private boolean accountExists(String username) {
-
         Connection connection = ConnectionUtil.getConnection();
         boolean isAccount = false;
         try {
@@ -51,7 +70,7 @@ public class AccountDAO {
             preparedStatement.setString(1, username);
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                if (rs.getString("username") == username) {
+                if (rs.getString("username").equals(username)) {
                     isAccount = true;
                 }
             }

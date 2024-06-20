@@ -24,8 +24,11 @@ public class AccountService {
         return null;
     }
 
-    public boolean loginAttempt(Account account) {
-        return accountDao.login(account);
+    public Account loginAttempt(Account account) {
+        if (account.getUsername() != null && account.getPassword() != null) {
+            return accountDao.login(account);
+        } 
+        return null;        
     }
     
 }
