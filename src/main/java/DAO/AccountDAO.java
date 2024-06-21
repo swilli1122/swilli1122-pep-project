@@ -4,10 +4,6 @@ import Model.Account;
 import Util.ConnectionUtil;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-
-// import com.azul.crs.client.Result;
 
 public class AccountDAO {
 
