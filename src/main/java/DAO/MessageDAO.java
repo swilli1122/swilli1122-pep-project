@@ -9,9 +9,8 @@ import java.util.*;
 public class MessageDAO {
 
     public Message addMessage(Message message) {
-
         if (accountExists(message.getPosted_by()) != true) {
-            return null; 
+            return null; // must have account to have messages
         }
 
         Connection connection = ConnectionUtil.getConnection();
@@ -34,7 +33,9 @@ public class MessageDAO {
         }
         return null;
     }
-
+    // check for if the requested account already exists
+    // very similar method in the AccountDao and considered importing
+    // but I figure the separation is worth no Account import
     private boolean accountExists(int account_id) {
         Connection connection = ConnectionUtil.getConnection();
         boolean isAccount = false;
@@ -72,7 +73,6 @@ public class MessageDAO {
     }
 
     public Message getMessageByID(int message_id) {
-
         Connection connection = ConnectionUtil.getConnection();
         try {
             String sql = "select * from message where message_id = ?;";
@@ -88,23 +88,18 @@ public class MessageDAO {
         return null;
     }
 
+    // not sure how to really test this without looking at database but the test case passes
     public Message deleteMessageByID(int message_id) {
         Connection connection = ConnectionUtil.getConnection();
-
         Message deletedMessage = getMessageByID(message_id);
-
         try {
             if (deletedMessage == null) {
                 return null;
             } 
-
             String sql = "delete from message where message_id = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
             preparedStatement.setInt(1, message_id);
-            
             preparedStatement.executeUpdate();
-            
         } catch(SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -113,25 +108,18 @@ public class MessageDAO {
 
     public Message patchMessageByID(int message_id, Message update_message) {
         Connection connection = ConnectionUtil.getConnection();
-
         String updated_text = update_message.getMessage_text();
-
         Message updatedMessage = getMessageByID(message_id);
-
         try {
             if (updatedMessage == null) {
-                return null;
+                return null; // this means the message trying to update does not exists
             } 
-
             String sql = "update message set message_text = ? where message_id = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
             preparedStatement.setString(1, updated_text);
             preparedStatement.setInt(2, message_id);
-            
             preparedStatement.executeUpdate();
             updatedMessage.setMessage_text(updated_text);
-            
         } catch(SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -155,5 +143,4 @@ public class MessageDAO {
         }
         return userMessages;
     }
-    
 }

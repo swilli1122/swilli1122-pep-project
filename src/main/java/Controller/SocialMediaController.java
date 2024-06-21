@@ -12,11 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
-/**
- * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
- * found in readme.md as well as the test cases. You should
- * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
- */
 public class SocialMediaController {
     AccountService accountService;
     MessageService messageService;
@@ -26,11 +21,7 @@ public class SocialMediaController {
         this.messageService = new MessageService();
     }
 
-    /**
-     * In order for the test cases to work, you will need to write the endpoints in the startAPI() method, as the test
-     * suite must receive a Javalin object from this method.
-     * @return a Javalin app object which defines the behavior of the Javalin controller.
-     */
+    // list of desired endpoints pointing to methods below
     public Javalin startAPI() {
         Javalin app = Javalin.create();
         app.post("/register", this::postNewAccountHandler);
@@ -45,12 +36,6 @@ public class SocialMediaController {
         return app;
     }
 
-    /**
-     * This is an example handler for an example endpoint.
-     * @param context The Javalin Context object manages information about both the HTTP request and response.
-     * @throws JsonProcessingException 
-     * @throws JsonMappingException 
-     */
     private void postNewAccountHandler(Context context) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Account account = mapper.readValue(context.body(), Account.class);
@@ -60,7 +45,6 @@ public class SocialMediaController {
         } else {
             context.status(400);
         }
-
     }
 
     private void postLoginHandler(Context context) throws JsonProcessingException {
@@ -72,7 +56,6 @@ public class SocialMediaController {
         } else {
             context.status(401);
         }
-
     }
 
     private void postNewMessageHandler(Context context) throws JsonProcessingException {
@@ -84,7 +67,6 @@ public class SocialMediaController {
         } else {
             context.status(400);
         }
-
     }
 
     private void getMessageHandler(Context context) {
@@ -114,6 +96,8 @@ public class SocialMediaController {
         } 
     }
 
+    // was trying to only extract the new message String from the context for a while before
+    // I realized to just make it an Object 
     private void patchMessageByIDHandler(Context context) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         int message_id = Integer.parseInt(context.pathParam("message_id"));
@@ -132,6 +116,4 @@ public class SocialMediaController {
         List<Message> messagesFromUser = messageService.getMessagesFromUserByID(account_id);
         context.json(messagesFromUser);
     }
-
-
 }
